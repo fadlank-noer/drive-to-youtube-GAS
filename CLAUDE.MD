@@ -90,32 +90,53 @@ DriveApp.continueFolderIterator(continuationToken)
 
 ---
 
-## YouTubeApp API
+## YoutubeApp API
 
 ### Upload Video
 
 ```javascript
 // Upload video to YouTube
-YoutubeApp.videos.insert(resource: Youtube.V3.Schema.Video, part: string[]): Youtube_v3.Youtube.V3.Schema.Video)
+YoutubeApp.Videos.insert(metadata: Metadata, parts: string, videoBlob: Blob)
+
+// Note: Videos (capital V), not videos (lowercase)
+// Returns: Video resource object with getId() method
+
+Example
+YoutubeApp.Videos.insert({
+  snippet: {
+    title: "Video title",
+    description: "Video description",
+    tags: ["tag1", "tag2"],
+    categoryId: "22"  // 22 = People & Blogs
+  },
+  status: {
+    privacyStatus: "private",  // Must be private when using publishAt
+    publishAt: "2025-01-01T00:00:00Z"  // ISO 8601 format (UTC)
+  }
+}, "snippet,status", fileBlob)
+
+// Get the uploaded video ID
+const response = YoutubeApp.Videos.insert(metadata, "snippet,status", mediaData);
+const videoId = response.getId();
 ```
 
-**Endpoint**: `POST https://www.googleapis.com/upload/youtube/v3/videos`
+The following list contains the part names that you can include in the parameter value:
+contentDetails
+fileDetails
+id
+liveStreamingDetails
+localizations
+paidProductPlacementDetails
+player
+processingDetails
+recordingDetails
+snippet
+statistics
+status
+suggestions
+topicDetails
 
-**Quota Cost**: 1600 units per upload
-
-**Max File Size**: 256GB
-
-**Required OAuth Scope**: `https://www.googleapis.com/auth/youtube.upload`
-
-### Request Parameters
-
-**Query Parameters:**
-- `part` (required) - Fields to set and return (e.g., `snippet,status`)
-- `notifySubscribers` (boolean) - Optional
-- `onBehalfOfContentOwner` - Optional
-- `onBehalfOfContentOwnerChannel` - Optional
-
-### Request Body Structure (Youtube.V3.Schema.Video)
+### Request Body Structure (Metadata)
 
 ```javascript
 {
@@ -156,8 +177,19 @@ YoutubeApp.videos.insert(resource: Youtube.V3.Schema.Video, part: string[]): You
 
 ### Video MIME Types
 
+Supported formats in this project:
+- `video/mp4` - MP4 video
+- `video/mpeg` - MPEG video
+- `video/quicktime` - MOV (QuickTime)
+- `video/x-msvideo` - AVI
+- `video/x-flv` - FLV (Flash Video)
+- `video/webm` - WebM
+- `video/3gpp` - 3GP
+- `video/x-matroska` - MKV
+
+Generic fallback:
 - `video/*` - Any video format
-- `application/octet-stream` - Fallback for binary data
+- `application/octet-stream` - Binary data fallback
 
 ### Common Category IDs
 
@@ -185,6 +217,86 @@ YoutubeApp.videos.insert(resource: Youtube.V3.Schema.Video, part: string[]): You
 
 ### Important Notes
 
+> **API Method**: Use `YoutubeApp.Videos.insert()` with **capital V**, not lowercase `videos`
+
 > **Note**: New API projects (post-2020) default uploads to **private** until audit completion.
 
 > **Schedule Publishing**: Use `publishAt` in status object to schedule video publication. Video must be `private` initially, then will publish at specified time.
+
+> **Blob Conversion**: Use `file.getBlob()` to convert Drive files to Blob for upload
+
+> **Error Handling**: Wrap upload calls in try-catch to handle quota limits and network errors
+
+---
+
+## Common Patterns
+
+### Drive to YouTube Upload Workflow
+
+```javascript
+// 1. Get video file from Drive folder
+const folder = DriveApp.getFolderById(FOLDER_ID);
+const file = folder.getFiles().next();
+
+// 2. Generate metadata with scheduled publishing
+function generateMetadata(fileName) {
+  const publishAt = new Date();
+  publishAt.setDate(publishAt.getDate() + 1);  // Tomorrow
+  publishAt.setHours(17, 0, 0);  // 5:00 PM UTC
+
+  return {
+    snippet: {
+      title: fileName,
+      description: `Video ${fileName}`,
+      tags: ["automated", "upload"],
+      categoryId: "22"
+    },
+    status: {
+      privacyStatus: "private",
+      publishAt: formatISO8601(publishAt)
+    }
+  };
+}
+
+// 3. Upload to YouTube
+const response = YoutubeApp.Videos.insert(
+  generateMetadata(file.getName()),
+  "snippet,status",
+  file.getBlob()
+);
+
+// 4. Move processed file to archive
+file.moveTo(archiveFolder);
+```
+
+### ISO 8601 Date Formatting
+
+```javascript
+// Format date for YouTube API (UTC timezone)
+function formatISO8601(date) {
+  const pad = (n) => n < 10 ? '0' + n : n;
+  return date.getUTCFullYear() + '-' +
+    pad(date.getUTCMonth() + 1) + '-' +
+    pad(date.getUTCDate()) + 'T' +
+    pad(date.getUTCHours()) + ':' +
+    pad(date.getUTCMinutes()) + ':' +
+    pad(date.getUTCSeconds()) + 'Z';
+}
+```
+
+### Tag Generation from Filename
+
+```javascript
+// Extract meaningful tags from filename
+function generateTags(fileName) {
+  const baseTags = ["upload", "google drive", "automated"];
+
+  // Remove special chars and extract words > 3 chars
+  const words = fileName
+    .replace(/[^\w\s]/gi, " ")
+    .split(/\s+/)
+    .filter(word => word.length > 3);
+
+  return [...baseTags, ...words].slice(0, 10);
+}
+```
