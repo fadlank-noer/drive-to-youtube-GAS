@@ -1,6 +1,8 @@
 // Folder Configuration
-let READY_DRIVE_FOLDER_ID = "test";
-let ARCHIVE_DRIVE_FOLDER_ID = "test";
+const READY_DRIVE_FOLDER_ID = "test";
+const ARCHIVE_DRIVE_FOLDER_ID = "test";
+const IS_SCHEDULED = false;
+const HOURLY_AT = ""; // Integer 1 - 12 (e.g., 1 = upload 1 hour after execution)
 
 // Supported video MIME types
 const VIDEO_MIME_TYPES = [
@@ -67,11 +69,7 @@ function isValidVideoFile(file) {
 
 function generateMetadata(fileName) {
   const now = new Date();
-  const publishAt = new Date();
-  publishAt.setDate(now.getDate() + 1);
-  publishAt.setHours(17, 0, 0);
-
-  const metadata = {
+  const baseMetadata = {
     snippet: {
       title: fileName,
       description: generateDescription(fileName),
@@ -79,12 +77,19 @@ function generateMetadata(fileName) {
       categoryId: "22"
     },
     status: {
-      privacyStatus: "private",
-      publishAt: formatISO8601(publishAt)
+      privacyStatus: "private"
     }
   };
 
-  return metadata;
+  // Only add publishAt if scheduled
+  if (IS_SCHEDULED && HOURLY_AT) {
+    const publishAt = new Date(now.getTime() + HOURLY_AT * 60 * 60 * 1000);
+    baseMetadata.status.publishAt = formatISO8601(publishAt);
+  } else {
+    baseMetadata.status.privacyStatus = "public";
+  }
+
+  return baseMetadata;
 }
 
 
