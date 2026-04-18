@@ -1,30 +1,26 @@
 # Drive to YouTube - Google Apps Script
 
-Automated video upload pipeline from Google Drive to YouTube using Google Apps Script.
+Config template generator for automated video upload pipeline from Google Drive to YouTube.
 
 ## Overview
 
-This script monitors a Google Drive folder and automatically uploads video files to YouTube with scheduled publishing times.
+This CLI tool generates a configured Google Apps Script (`output.gs`) that monitors a Google Drive folder and automatically uploads video files to YouTube with scheduled publishing times. Run the CLI, copy the generated `output.gs` to Google Apps Script, and deploy.
 
 ## Workflow
 
 ```
-Google Drive Folder "ToUpload"
-        ↓ (Trigger: onChange or time-driven every 5 minutes)
-   Google Apps Script (main file + utility library)
-        ↓
-1. Detect new video files
-2. Determine publish schedule (simple logic)
-3. Upload via YouTube Data API v3 + set "publishAt"
-4. Move to "Archive" folder
+Templating
+- Generate your config via Node CLI
+- Output ready to copy to Google Apps Script
+
+App
+- Get all videos in "Ready" folder
+- Seed video manifest/snippet with your configuration
+- Video becomes ready on YouTube
+- Move video from "Ready" folder to Archive folder
 ```
 
 ## Features
-
-- **Automatic Detection**: Monitors Google Drive folder for new video files
-- **Scheduled Publishing**: Automatically sets YouTube publish time
-- **Archive Management**: Moves processed files to Archive folder
-- **Flexible Triggers**: Supports both onChange and time-based triggers (5 min intervals)
 
 ## Requirements
 
@@ -36,7 +32,7 @@ Google Drive Folder "ToUpload"
 1. Enable Google Drive API
 2. Enable YouTube Data API v3
 3. Configure OAuth2 consent screen
-4. Create API credentials
+4. Run Triggers in Google App Script
 
 ## Deployment
 
@@ -44,15 +40,26 @@ This project is designed to be deployed directly to [Google Apps Script](https:/
 
 ## Project Structure
 
-TBA
+```
+drive-to-yt-GAS/
+├── src/
+│   └── main.gs            # Google Apps Script template
+├── templates/
+│   └── templating.cjs     # EJS template for config generation
+├── index.js               # CLI entry point
+├── package.json           # Node.js dependencies
+├── output.gs              # Generated Apps Script (copy this to GAS)
+└── readme.md              # This file
+```
 
 ## Usage
 
-1. Create a folder named "ToUpload" in your Google Drive
-2. Create an "Archive" folder for processed files
-3. Deploy the script to Google Apps Script
-4. Set up triggers (onChange or time-driven)
-5. Add video files to "ToUpload" folder
+1. Create "Ready" and "Archive" folders in your Google Drive
+2. Run the templating engine to generate the "output.gs" file
+3. Copy the entire content of output.gs to Google Apps Script
+4. Deploy the script to Google Apps Script
+5. Set up triggers (onChange or time-driven)
+6. Add video files to "Ready" folder
 
 ## License
 

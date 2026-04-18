@@ -1,8 +1,8 @@
 // Folder Configuration
-const READY_DRIVE_FOLDER_ID = "test";
-const ARCHIVE_DRIVE_FOLDER_ID = "test";
-const IS_SCHEDULED = false;
-const HOURLY_AT = ""; // Integer 1 - 12 (e.g., 1 = upload 1 hour after execution)
+const READY_DRIVE_FOLDER_ID = "<%= readyFolderId %>";
+const ARCHIVE_DRIVE_FOLDER_ID = "<%= archiveFolderId %>";
+const IS_SCHEDULED = <%= isScheduled %>;
+const HOURLY_AT = "<%= hourlyAt %>"; // Integer 1 - 12 (e.g., 1 = upload 1 hour after execution)
 
 // Supported video MIME types
 const VIDEO_MIME_TYPES = [

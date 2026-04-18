@@ -1,0 +1,24 @@
+{
+  "name": "templating-google-app-script-drive-to-youtube",
+  "version": "1.0.0",
+  "description": "Templating Google App Script Drive to Youtube",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fadlank-noer/drive-to-youtube-GAS.git"
+  },
+  "keywords": [],
+  "author": "Fadlan Kautsar Noer",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/fadlank-noer/drive-to-youtube-GAS/issues"
+  },
+  "homepage": "https://github.com/fadlank-noer/drive-to-youtube-GAS#readme",
+  "dependencies": {
+    "@clack/prompts": "^1.2.0",
+    "ejs": "^5.0.2"
+  }
+}
