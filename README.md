@@ -22,6 +22,10 @@ App
 
 ## Features
 
+## Limitations
+
+- **Maximum video size: 256GB** - YouTube's upload limit per video
+
 ## Requirements
 
 ### Google APIs & Services
