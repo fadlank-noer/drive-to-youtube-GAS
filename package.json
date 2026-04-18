@@ -2,9 +2,12 @@
   "name": "templating-google-app-script-drive-to-youtube",
   "version": "1.0.0",
   "description": "Templating Google App Script Drive to Youtube",
-  "main": "index.js",
+    "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm i && node index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
   },
   "repository": {
     "type": "git",
@@ -20,5 +23,8 @@
   "dependencies": {
     "@clack/prompts": "^1.2.0",
     "ejs": "^5.0.2"
+  },
+  "devDependencies": {
+    "jest": "^30.3.0"
   }
 }
