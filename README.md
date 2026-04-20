@@ -50,6 +50,9 @@ drive-to-yt-GAS/
 │   └── main.gs            # Google Apps Script template
 ├── templates/
 │   └── templating.cjs     # EJS template for config generation
+├── tests/
+│   ├── index.test.js
+│   └── templating.test.js
 ├── index.js               # CLI entry point
 ├── package.json           # Node.js dependencies
 ├── output.gs              # Generated Apps Script (copy this to GAS)
@@ -57,6 +60,10 @@ drive-to-yt-GAS/
 ```
 
 ## Usage
+
+```bash
+npm start
+```
 
 1. Create "Ready" and "Archive" folders in your Google Drive
 2. Run the templating engine to generate the "output.gs" file
